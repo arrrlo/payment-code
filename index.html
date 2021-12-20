@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Generator barkoda uplatnica</title>
+	<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="https://bikonja.github.io/generator-barkoda-uplatnica/bcmath-min.js"></script>
+	<script src="https://bikonja.github.io/generator-barkoda-uplatnica/pdf417-min.js"></script>
+	<script src="https://rawgit.com/Bikonja/generator-barkoda-uplatnica/master/BarcodePayment.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    // file:///Users/ivanarar/work/arrrlo/barcode_payment/index.html?iznos=100,00&ime_primatelja=Zlatko%20Arar&iban=HR4923600003214071887&poziv_na_broj=123&opis_placanja=rezije
+
+	jQuery(document).ready(function() {
+		BarcodePayment.Init({
+			ValidateIBAN: false, // Validation is not yet implemented
+			ValidateModelPozivNaBroj: true // Validation is not yet implemented
+		});
+		GenerirajBarkod();
+	});
+
+	function findGetParameter(parameterName) {
+        var result = null,
+            tmp = [];
+        location.search
+            .substr(1)
+            .split("&")
+            .forEach(function (item) {
+              tmp = item.split("=");
+              if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+            });
+        return result;
+    }
+
+	function GetPaymentParams() {
+		var paymentParams = new BarcodePayment.PaymentParams();
+		
+		paymentParams.Iznos = findGetParameter('iznos');
+		paymentParams.Primatelj = findGetParameter('ime_primatelja');
+		paymentParams.IBAN = findGetParameter('iban'); //'HR4923600003214071887';
+		paymentParams.ModelPlacanja = '00';
+		paymentParams.PozivNaBroj = findGetParameter('poziv_na_broj');
+		paymentParams.SifraNamjene = 'COST';
+		paymentParams.OpisPlacanja = findGetParameter('opis_placanja');
+		
+		return paymentParams
+	}
+
+	function GenerirajBarkod() {
+		var generateBarcode = true;
+		var paymentParams = GetPaymentParams();
+		var textToEncode = BarcodePayment.GetEncodedText(paymentParams);
+
+		// Barcode generation sample copied from library sample
+		PDF417.init(textToEncode);
+		var barcode = PDF417.getBarcodeArray();
+		// block sizes (width and height) in pixels
+		var bw = 2;
+		var bh = 2;
+		// create canvas element based on number of columns and rows in barcode
+		var container = document.getElementById('barcode');
+		if (container.firstChild) {
+			container.removeChild(container.firstChild);
+		}
+		var canvas = document.createElement('canvas');
+		canvas.width = bw * barcode['num_cols'];
+		canvas.height = bh * barcode['num_rows'];
+		container.appendChild(canvas);
+		
+		if (generateBarcode) {
+			var ctx = canvas.getContext('2d');
+			// graph barcode elements
+			var y = 0;
+			// for each row
+			for (var r = 0; r < barcode['num_rows']; ++r) {
+				var x = 0;
+				// for each column
+				for (var c = 0; c < barcode['num_cols']; ++c) {
+					if (barcode['bcode'][r][c] == 1) {
+						ctx.fillRect(x, y, bw, bh);
+					}
+					x += bw;
+				}
+				y += bh;
+			}
+		}
+	}
+</script>
+<div id="barcode"></div>
+</body>
+</html>
