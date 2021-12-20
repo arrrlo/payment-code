@@ -3,7 +3,6 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Generator barkoda uplatnica</title>
 	<script src="https://code.jquery.com/jquery-latest.min.js"></script>
 	<script src="https://bikonja.github.io/generator-barkoda-uplatnica/bcmath-min.js"></script>
 	<script src="https://bikonja.github.io/generator-barkoda-uplatnica/pdf417-min.js"></script>
@@ -14,10 +13,14 @@
 <script type="text/javascript">
 	jQuery(document).ready(function() {
 		BarcodePayment.Init({
-			ValidateIBAN: false, // Validation is not yet implemented
-			ValidateModelPozivNaBroj: true // Validation is not yet implemented
+			ValidateIBAN: false,
+			ValidateModelPozivNaBroj: true
 		});
 		GenerirajBarkod();
+
+		console.log('Stranica sluzi iskljucivo za osobnu upotrebu.');
+		console.log('Jako sam zavalan Github useru @bikonja ciji je JS kod includean u headeru i ciji ja je vecina JS kod u ovom script bloku.');
+		console.log('Trebao mi je url u koji upisujem get parametre za generiranje koda za placanje, a da se u tijelu stranice izgenerora samo taj kod.');
 	});
 
 	function findGetParameter(parameterName) {
@@ -35,7 +38,7 @@
 
 	function GetPaymentParams() {
 		var paymentParams = new BarcodePayment.PaymentParams();
-		
+
 		paymentParams.Iznos = findGetParameter('iznos').replace('.', ',');
 		paymentParams.Primatelj = findGetParameter('ime_primatelja');
 		paymentParams.IBAN = findGetParameter('iban');
@@ -43,7 +46,7 @@
 		paymentParams.PozivNaBroj = findGetParameter('poziv_na_broj');
 		paymentParams.SifraNamjene = 'COST';
 		paymentParams.OpisPlacanja = findGetParameter('opis_placanja');
-		
+
 		return paymentParams
 	}
 
@@ -67,7 +70,7 @@
 		canvas.width = bw * barcode['num_cols'];
 		canvas.height = bh * barcode['num_rows'];
 		container.appendChild(canvas);
-		
+
 		if (generateBarcode) {
 			var ctx = canvas.getContext('2d');
 			// graph barcode elements
