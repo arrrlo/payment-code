@@ -12,9 +12,6 @@
 <body>
 
 <script type="text/javascript">
-
-    // file:///Users/ivanarar/work/arrrlo/barcode_payment/index.html?iznos=100,00&ime_primatelja=Zlatko%20Arar&iban=HR4923600003214071887&poziv_na_broj=123&opis_placanja=rezije
-
 	jQuery(document).ready(function() {
 		BarcodePayment.Init({
 			ValidateIBAN: false, // Validation is not yet implemented
@@ -39,9 +36,9 @@
 	function GetPaymentParams() {
 		var paymentParams = new BarcodePayment.PaymentParams();
 		
-		paymentParams.Iznos = findGetParameter('iznos');
+		paymentParams.Iznos = findGetParameter('iznos').replace('.', ',');
 		paymentParams.Primatelj = findGetParameter('ime_primatelja');
-		paymentParams.IBAN = findGetParameter('iban'); //'HR4923600003214071887';
+		paymentParams.IBAN = findGetParameter('iban');
 		paymentParams.ModelPlacanja = '00';
 		paymentParams.PozivNaBroj = findGetParameter('poziv_na_broj');
 		paymentParams.SifraNamjene = 'COST';
